@@ -86,7 +86,7 @@ export default function HomeScreen() {
                     { backgroundColor: '#FFE5E5' },
                   ]}
                 >
-                  <Text style={styles.transactionEmoji}>🛒</Text>
+                  <Text style={styles.transactionIconText}>$</Text>
                 </View>
                 <View>
                   <Text style={styles.transactionName}>Grocery Store</Text>
@@ -104,7 +104,7 @@ export default function HomeScreen() {
                     { backgroundColor: '#E5F5FF' },
                   ]}
                 >
-                  <Text style={styles.transactionEmoji}>💼</Text>
+                  <Text style={styles.transactionIconText}>↑</Text>
                 </View>
                 <View>
                   <Text style={styles.transactionName}>Salary Deposit</Text>
@@ -122,7 +122,7 @@ export default function HomeScreen() {
                     { backgroundColor: '#FFF5E5' },
                   ]}
                 >
-                  <Text style={styles.transactionEmoji}>☕</Text>
+                  <Text style={styles.transactionIconText}>•</Text>
                 </View>
                 <View>
                   <Text style={styles.transactionName}>Coffee Shop</Text>
@@ -140,7 +140,7 @@ export default function HomeScreen() {
                     { backgroundColor: '#F0E5FF' },
                   ]}
                 >
-                  <Text style={styles.transactionEmoji}>🎮</Text>
+                  <Text style={styles.transactionIconText}>◆</Text>
                 </View>
                 <View>
                   <Text style={styles.transactionName}>Entertainment</Text>
@@ -364,8 +364,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginRight: 12,
   },
-  transactionEmoji: {
-    fontSize: 20,
+  transactionIconText: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#2D3748',
   },
   transactionName: {
     fontSize: 16,
