@@ -3,6 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import HomeScreen from '../screens/HomeScreen.tsx';
 import ExpenseScreen from '../screens/ExpenseScreen.tsx';
 import { Text } from 'react-native';
+import RegisterScreen from '../screens/RegisterScreen.tsx';
 
 const Tab = createBottomTabNavigator();
 
@@ -41,6 +42,16 @@ export default function AppNavigator() {
             tabBarLabel: 'Expenses',
             tabBarIcon: ({ color }) => (
               <Text style={{ fontSize: 24, color }}>$</Text>
+            ),
+          }}
+        />
+        <Tab.Screen
+          name="Register"
+          component={RegisterScreen}
+          options={{
+            tabBarLabel: 'Register',
+            tabBarIcon: ({ color }) => (
+              <Text style={{ fontSize: 24, color }}>R</Text>
             ),
           }}
         />
