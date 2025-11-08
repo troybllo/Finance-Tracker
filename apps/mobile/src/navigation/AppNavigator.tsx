@@ -4,6 +4,7 @@ import HomeScreen from '../screens/HomeScreen.tsx';
 import ExpenseScreen from '../screens/ExpenseScreen.tsx';
 import { Text } from 'react-native';
 import RegisterScreen from '../screens/RegisterScreen.tsx';
+import LoginScreen from '../screens/LoginScreen.tsx';
 
 const Tab = createBottomTabNavigator();
 
@@ -52,6 +53,16 @@ export default function AppNavigator() {
             tabBarLabel: 'Register',
             tabBarIcon: ({ color }) => (
               <Text style={{ fontSize: 24, color }}>R</Text>
+            ),
+          }}
+        />
+        <Tab.Screen
+          name="Login"
+          component={LoginScreen}
+          options={{
+            tabBarLabel: 'Login',
+            tabBarIcon: ({ color }) => (
+              <Text style={{ fontSize: 24, color }}>L</Text>
             ),
           }}
         />

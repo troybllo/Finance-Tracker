@@ -23,6 +23,40 @@ export default function RegisterScreen() {
   const navigation = useNavigation<any>();
 
   const handleRegister = async () => {
+    // Clear previous errors
+    setError('');
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    // Validate all fields before making API call
+    if (!name.trim()) {
+      setError('Please enter your full name');
+      return;
+    }
+
+    if (!email.trim()) {
+      setError('Please enter your email');
+      return;
+    }
+
+    if (!password) {
+      setError('Please enter a password');
+      return;
+    }
+
+    if (password.length < 8) {
+      setError('Password must be at least 8 characters');
+      return;
+    }
+
+    if (!emailRegex.test(email)) {
+      setError('Please enter a valid email address');
+      return;
+    }
+    if (password !== confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+
     setLoading(true);
     try {
       const result = await authAPI.register({ name, email, password });
@@ -31,7 +65,7 @@ export default function RegisterScreen() {
 
       navigation.navigate('Home');
     } catch (error) {
-      setError(`Registration failed : ${error}`);
+      setError(`Registration failed: ${error}`);
     } finally {
       setLoading(false);
     }
@@ -104,6 +138,11 @@ export default function RegisterScreen() {
                 style={styles.input}
               />
             </View>
+            {error ? (
+              <View style={styles.errorContainer}>
+                <Text style={styles.errorText}>{error}</Text>
+              </View>
+            ) : null}
             <View style={styles.termsContainer}>
               <TouchableOpacity
                 style={styles.checkboxContainer}
@@ -264,5 +303,18 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 16,
     fontSize: 16,
+  },
+  errorContainer: {
+    backgroundColor: '#FEE',
+    padding: 12,
+    borderRadius: 8,
+    borderLeftWidth: 4,
+    borderLeftColor: '#F44',
+    marginVertical: 8,
+  },
+  errorText: {
+    color: '#C33',
+    fontSize: 14,
+    fontWeight: '600',
   },
 });
