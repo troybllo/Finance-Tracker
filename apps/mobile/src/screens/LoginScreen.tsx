@@ -9,7 +9,6 @@ import {
 } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
-import { authAPI } from '../services/api';
 import useAuthStore from '../store/authStore';
 
 export default function LoginScreen() {
@@ -19,9 +18,8 @@ export default function LoginScreen() {
   const [showPassword, setShowPassword] = useState(false);
   const navigation = useNavigation<any>();
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
   const login = useAuthStore(state => state.login);
-  const loading = useAuthStore(state => state.laoding);
+  const loading = useAuthStore(state => state.loading);
 
   const handleLogin = async () => {
     // Clear previous errors
@@ -40,16 +38,11 @@ export default function LoginScreen() {
       return;
     }
 
-    setLoading(true);
-
     try {
       await login(email, password);
-
       navigation.navigate('Home');
-    } catch (error) {
-      setError(`Login failed: ${error}`);
-    } finally {
-      setLoading(false);
+    } catch (error: any) {
+      setError(error.response?.data?.error || 'Login failed. Please try again.');
     }
   };
 

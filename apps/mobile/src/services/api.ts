@@ -1,6 +1,9 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:3000/api';
+// Use your computer's IP address for physical devices/emulators
+// For iOS Simulator, you can use localhost
+// For Android Emulator, use 10.0.2.2
+const API_URL = 'http://192.168.2.25:3000/api';
 
 interface RegisterData {
   name: string;

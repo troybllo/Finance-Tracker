@@ -1,4 +1,3 @@
-import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { authAPI } from '../services/api';
@@ -32,7 +31,7 @@ const useAuthStore = create<AuthStore>()(
       login: async (email, password) => {
         set({ loading: true });
         try {
-          const response = await authAPI.login(email, password);
+          const response = await authAPI.login({ email, password });
 
           set({
             user: response.user,
@@ -57,7 +56,7 @@ const useAuthStore = create<AuthStore>()(
       register: async (name, email, password) => {
         set({ loading: true });
         try {
-          const response = await authAPI.register(name, email, password);
+          const response = await authAPI.register({ name, email, password });
 
           set({
             user: response.user,

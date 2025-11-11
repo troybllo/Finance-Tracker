@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import {
   ScrollView,
   StyleSheet,
@@ -8,9 +8,8 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import { authAPI } from '../services/api';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
+import useAuthStore from '../store/authStore';
 
 export default function RegisterScreen() {
   const [acceptedTerms, setAcceptedTerms] = useState(false);
@@ -18,9 +17,10 @@ export default function RegisterScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const navigation = useNavigation<any>();
+  const register = useAuthStore(state => state.register);
+  const loading = useAuthStore(state => state.loading);
 
   const handleRegister = async () => {
     // Clear previous errors
@@ -57,30 +57,15 @@ export default function RegisterScreen() {
       return;
     }
 
-    setLoading(true);
     try {
-      const result = await authAPI.register({ name, email, password });
-
-      await AsyncStorage.setItem('token', result.token);
-
+      await register(name, email, password);
       navigation.navigate('Home');
-    } catch (error) {
-      setError(`Registration failed: ${error}`);
-    } finally {
-      setLoading(false);
+    } catch (error: any) {
+      setError(
+        error.response?.data?.error || 'Registration failed. Please try again.',
+      );
     }
   };
-
-  useEffect(() => {
-    const checkAuth = async () => {
-      const token = await AsyncStorage.getItem('token');
-      if (token) {
-        // User is logged in, go to Home
-        navigation.navigate('Home');
-      }
-    };
-    checkAuth();
-  }, [navigation]);
 
   return (
     <SafeAreaProvider>
