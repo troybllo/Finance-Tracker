@@ -164,7 +164,10 @@ export default function RegisterScreen() {
           <View style={styles.footer}>
             <View>
               <Text style={styles.loginPrompt}>Already have an account?</Text>
-              <TouchableOpacity style={styles.outlineButton}>
+              <TouchableOpacity
+                style={styles.outlineButton}
+                onPress={() => navigation.navigate('Login')}
+              >
                 <Text style={styles.buttonText}>Login</Text>
               </TouchableOpacity>
             </View>

@@ -8,6 +8,7 @@ import { Text, View, ActivityIndicator } from 'react-native';
 import RegisterScreen from '../screens/RegisterScreen.tsx';
 import LoginScreen from '../screens/LoginScreen.tsx';
 import useAuthStore from '../store/authStore.ts';
+import ProfileScreen from '../screens/ProfileScreen.tsx';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -55,6 +56,16 @@ function MainTabs() {
           tabBarLabel: 'Expenses',
           tabBarIcon: ({ color }) => (
             <Text style={{ fontSize: 24, color }}>$</Text>
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Profile"
+        component={ProfileScreen}
+        options={{
+          tabBarLabel: 'Profile',
+          tabBarIcon: ({ color }) => (
+            <Text style={{ fontSize: 24, color }}>P</Text>
           ),
         }}
       />

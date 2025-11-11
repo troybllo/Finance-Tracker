@@ -1,3 +1,4 @@
+import { useNavigation } from '@react-navigation/native';
 import {
   ScrollView,
   StyleSheet,
@@ -8,6 +9,8 @@ import {
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 export default function HomeScreen() {
+  const navigation = useNavigation<any>();
+
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.container}>
@@ -19,9 +22,11 @@ export default function HomeScreen() {
               <Text style={styles.subtitle}>Track your finances</Text>
             </View>
             <View style={styles.headerProfile}>
-              <View style={styles.profileCircle}>
-                <Text style={styles.profileInitial}>U</Text>
-              </View>
+              <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
+                <View style={styles.profileCircle}>
+                  <Text style={styles.profileInitial}>U</Text>
+                </View>
+              </TouchableOpacity>
             </View>
           </View>
 

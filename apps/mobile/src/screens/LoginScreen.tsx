@@ -42,7 +42,9 @@ export default function LoginScreen() {
       await login(email, password);
       navigation.navigate('Home');
     } catch (error: any) {
-      setError(error.response?.data?.error || 'Login failed. Please try again.');
+      setError(
+        error.response?.data?.error || 'Login failed. Please try again.',
+      );
     }
   };
 
