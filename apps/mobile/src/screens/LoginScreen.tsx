@@ -19,6 +19,7 @@ export default function LoginScreen() {
   const navigation = useNavigation<any>();
   const [error, setError] = useState('');
   const login = useAuthStore(state => state.login);
+  const checkAuth = useAuthStore(state => state.checkAuth);
   const loading = useAuthStore(state => state.loading);
 
   const handleLogin = async () => {
@@ -40,6 +41,7 @@ export default function LoginScreen() {
 
     try {
       await login(email, password);
+      await checkAuth();
       navigation.navigate('Home');
     } catch (error: any) {
       setError(

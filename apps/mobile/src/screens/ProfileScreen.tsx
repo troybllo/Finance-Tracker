@@ -6,6 +6,9 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import useAuthStore from '../store/authStore';
+import { NavigationContainer } from '@react-navigation/native';
+import { AuthStack } from '../navigation/AppNavigator';
 
 export default function ProfileScreen() {
   const total = 12521.1;
@@ -16,6 +19,22 @@ export default function ProfileScreen() {
   const subscriptionPercent = (subscription / budget) * 100;
   const friendFamilyPercent = (friendFamily / budget) * 100;
   const remainingPercent = 100 - subscriptionPercent - friendFamilyPercent;
+  const logout = useAuthStore(state => state.logout);
+  const user = useAuthStore(state => state.user);
+
+  const handleLogout = async (): Promise<Element> => {
+    try {
+      logout();
+      return (
+        <NavigationContainer>
+          <AuthStack />
+        </NavigationContainer>
+      );
+    } catch (error) {
+      throw error;
+    }
+  };
+
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.container}>
@@ -25,7 +44,9 @@ export default function ProfileScreen() {
           </View>
           <View style={styles.profileContainer}>
             <View style={styles.profileCircle}>
-              <Text style={styles.profileInitial}>T</Text>
+              <Text style={styles.profileInitial}>
+                {user?.name[0]?.toUpperCase()}
+              </Text>
             </View>
           </View>
 
@@ -106,6 +127,15 @@ export default function ProfileScreen() {
               <TouchableOpacity>
                 <Text style={{ fontWeight: 600, fontSize: 18 }}>
                   Security Settings
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+          <View style={styles.overview}>
+            <View>
+              <TouchableOpacity onPress={handleLogout}>
+                <Text style={{ fontWeight: 600, fontSize: 18, color: 'red' }}>
+                  Log out
                 </Text>
               </TouchableOpacity>
             </View>

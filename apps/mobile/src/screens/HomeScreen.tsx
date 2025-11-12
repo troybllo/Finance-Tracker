@@ -7,9 +7,11 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import useAuthStore from '../store/authStore';
 
 export default function HomeScreen() {
   const navigation = useNavigation<any>();
+  const user = useAuthStore(state => state.user);
 
   return (
     <SafeAreaProvider>
@@ -24,7 +26,9 @@ export default function HomeScreen() {
             <View style={styles.headerProfile}>
               <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
                 <View style={styles.profileCircle}>
-                  <Text style={styles.profileInitial}>U</Text>
+                  <Text style={styles.profileInitial}>
+                    {user?.name[0].toUpperCase()}
+                  </Text>
                 </View>
               </TouchableOpacity>
             </View>
