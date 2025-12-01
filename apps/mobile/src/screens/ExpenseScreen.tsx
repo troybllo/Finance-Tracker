@@ -1,6 +1,7 @@
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { BarChart } from 'react-native-gifted-charts';
+import useExpenseStore from '../store/expenseStore';
 
 export default function ExpenseScreen() {
   const barData = [
@@ -12,6 +13,10 @@ export default function ExpenseScreen() {
     { value: 820, label: 'Sat', frontColor: '#F56565' },
     { value: 390, label: 'Sun', frontColor: '#F56565' },
   ];
+  const createExpense = useExpenseStore(state => state.createExpense);
+  const deleteExpense = useExpenseStore(state => state.deleteExpense);
+  const updateExpense = useExpenseStore(state => state.updateExpense);
+  const getExpenses = useExpenseStore(state => state.fetchExpenses);
 
   return (
     <SafeAreaProvider>

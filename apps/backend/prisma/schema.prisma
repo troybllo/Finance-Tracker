@@ -14,10 +14,40 @@ datasource db {
 }
 
 model User {
-  id            String   @id @default(uuid())
-  email         String   @unique
+  id            String     @id @default(uuid())
+  email         String     @unique
   name          String?
   password_hash String
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @default(now())
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @default(now())
+  categories    Category[]
+  expenses      Expense[]
+}
+
+model Category {
+  id        String    @id @default(uuid())
+  name      String
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expenses  Expense[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@unique([userId, name])
+}
+
+model Expense {
+  id         String    @id @default(uuid())
+  amount     Decimal   @db.Decimal(10, 2)
+  currency   String    @default("USD")
+  note       String?
+  date       DateTime
+  userId     String
+  categoryId String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category   Category? @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@index([userId, date])
 }
