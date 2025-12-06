@@ -1,38 +1,128 @@
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { BarChart } from 'react-native-gifted-charts';
 import useExpenseStore from '../store/expenseStore';
+import { useEffect } from 'react';
+import { Expense } from '../store/expenseStore';
+
+const getWeekRange = () => {
+  const now = new Date();
+  const dayOfWeek = now.getDay(); // 0 (Sun) to 6 (Sat)
+
+  const startOfWeek = new Date(now);
+  startOfWeek.setDate(now.getDate() - dayOfWeek);
+  startOfWeek.setHours(0, 0, 0, 0);
+  const endOfWeek = new Date(startOfWeek);
+  endOfWeek.setDate(startOfWeek.getDate() + 6);
+  endOfWeek.setHours(23, 59, 59, 999);
+
+  return { startOfWeek, endOfWeek };
+};
 
 export default function ExpenseScreen() {
-  const barData = [
-    { value: 450, label: 'Mon', frontColor: '#F56565' },
-    { value: 320, label: 'Tue', frontColor: '#F56565' },
-    { value: 580, label: 'Wed', frontColor: '#F56565' },
-    { value: 290, label: 'Thu', frontColor: '#F56565' },
-    { value: 670, label: 'Fri', frontColor: '#F56565' },
-    { value: 820, label: 'Sat', frontColor: '#F56565' },
-    { value: 390, label: 'Sun', frontColor: '#F56565' },
-  ];
   const createExpense = useExpenseStore(state => state.createExpense);
   const deleteExpense = useExpenseStore(state => state.deleteExpense);
   const updateExpense = useExpenseStore(state => state.updateExpense);
-  const getExpenses = useExpenseStore(state => state.fetchExpenses);
+  const fetchExpenses = useExpenseStore(state => state.fetchExpenses);
+  const expenses = useExpenseStore(state => state.expenses);
+  const loading = useExpenseStore(state => state.loading);
+
+  useEffect(() => {
+    const { startOfWeek, endOfWeek } = getWeekRange();
+
+    fetchExpenses({
+      from: startOfWeek.toISOString().split('T')[0], // "2024-11-24"
+      to: endOfWeek.toISOString().split('T')[0], // "2024-11-30"
+    });
+  }, []);
+
+  // Calculate weekly total
+  const weeklyTotal = expenses
+    .reduce((sum, expense) => {
+      return sum + parseFloat(expense.amount);
+    }, 0)
+    .toFixed(2);
+
+  const getExpensesByDay = () => {
+    const grouped: { [key: string]: { expenses: Expense[]; total: number } } =
+      {};
+
+    expenses.forEach(expense => {
+      const date = new Date(expense.date);
+      const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
+
+      if (!grouped[dayName]) {
+        grouped[dayName] = { expenses: [], total: 0 };
+      }
+
+      grouped[dayName].expenses.push(expense);
+      grouped[dayName].total += parseFloat(expense.amount);
+    });
+    return grouped;
+  };
+
+  const expensesByDay = getExpensesByDay();
+
+  // Calculate average per day (divide by 7 days)
+  const averagePerDay = (parseFloat(weeklyTotal) / 7).toFixed(2);
+
+  const barData = [
+    {
+      value: expensesByDay.Mon?.total || 0,
+      label: 'Mon',
+      frontColor: '#F56565',
+    },
+    {
+      value: expensesByDay.Tue?.total || 0,
+      label: 'Tue',
+      frontColor: '#F56565',
+    },
+    {
+      value: expensesByDay.Wed?.total || 0,
+      label: 'Wed',
+      frontColor: '#F56565',
+    },
+    {
+      value: expensesByDay.Thu?.total || 0,
+      label: 'Thu',
+      frontColor: '#F56565',
+    },
+    {
+      value: expensesByDay.Fri?.total || 0,
+      label: 'Fri',
+      frontColor: '#F56565',
+    },
+    {
+      value: expensesByDay.Sat?.total || 0,
+      label: 'Sat',
+      frontColor: '#F56565',
+    },
+    {
+      value: expensesByDay.Sun?.total || 0,
+      label: 'Sun',
+      frontColor: '#F56565',
+    },
+  ];
 
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.container}>
         <ScrollView>
-          {/* Header */}
           <View style={styles.header}>
             <Text style={styles.title}>Expenses</Text>
             <Text style={styles.subtitle}>Track your spending</Text>
           </View>
 
-          {/* Chart Card */}
           <View style={styles.chartCard}>
             <View style={styles.chartHeader}>
               <Text style={styles.chartTitle}>Weekly Expenses</Text>
-              <Text style={styles.chartTotal}>$3,520.00</Text>
+              <Text style={styles.chartTotal}>${weeklyTotal}</Text>
             </View>
 
             <View style={styles.chartContainer}>
@@ -56,7 +146,7 @@ export default function ExpenseScreen() {
 
             <View style={styles.chartFooter}>
               <Text style={styles.chartFooterText}>
-                Average: $502.86 per day
+                Average: ${averagePerDay} per day
               </Text>
             </View>
           </View>
@@ -74,6 +164,15 @@ export default function ExpenseScreen() {
               <Text style={styles.statValue}>$290.00</Text>
               <Text style={styles.statDay}>Thursday</Text>
             </View>
+          </View>
+          <View style={styles.handleCard}>
+            <TouchableOpacity style={styles.addExpense}>
+              <Text style={styles.addExpenseText}>+ Add Expense</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.deleteExpense}>
+              <Text style={styles.deleteExpenseText}>Delete Expense</Text>
+            </TouchableOpacity>
           </View>
         </ScrollView>
       </SafeAreaView>
@@ -177,5 +276,51 @@ const styles = StyleSheet.create({
   statDay: {
     fontSize: 13,
     color: '#718096',
+  },
+  handleCard: {
+    flexDirection: 'row',
+    gap: 12,
+    paddingHorizontal: 20,
+    marginBottom: 20,
+  },
+  addExpense: {
+    flex: 1,
+    backgroundColor: '#48BB78',
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#48BB78',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  addExpenseText: {
+    color: '#FFF',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  deleteExpense: {
+    flex: 1,
+    backgroundColor: '#FFF',
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 2,
+    borderColor: '#F56565',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  deleteExpenseText: {
+    color: '#F56565',
+    fontSize: 16,
+    fontWeight: '600',
   },
 });

@@ -2,12 +2,12 @@ import { create } from 'zustand';
 import useAuthStore from './authStore';
 import { expenseAPI } from '../services/api';
 
-interface Category {
+export interface Category {
   id: string;
   name: string;
 }
 
-interface Expense {
+export interface Expense {
   id: string;
   amount: string;
   currency: string;
@@ -20,7 +20,7 @@ interface Expense {
   updatedAt: string;
 }
 
-interface ExpenseStore {
+export interface ExpenseStore {
   expenses: Expense[];
   loading: boolean;
   error: string | null;
@@ -47,7 +47,7 @@ interface ExpenseStore {
       date: string;
       note?: string;
       currency?: string;
-    }>
+    }>,
   ) => Promise<void>;
   deleteExpense: (id: string) => Promise<void>;
   clearError: () => void;
@@ -58,7 +58,7 @@ const useExpenseStore = create<ExpenseStore>((set, get) => ({
   loading: false,
   error: null,
 
-  fetchExpenses: async (params) => {
+  fetchExpenses: async params => {
     set({ loading: true, error: null });
     try {
       const token = useAuthStore.getState().token;
@@ -72,7 +72,7 @@ const useExpenseStore = create<ExpenseStore>((set, get) => ({
     }
   },
 
-  createExpense: async (expense) => {
+  createExpense: async expense => {
     set({ loading: true, error: null });
     try {
       const token = useAuthStore.getState().token;
@@ -100,9 +100,7 @@ const useExpenseStore = create<ExpenseStore>((set, get) => ({
       const updatedExpense = await expenseAPI.updateExpense(token, id, expense);
       // Replace the updated expense in the array
       set({
-        expenses: get().expenses.map((e) =>
-          e.id === id ? updatedExpense : e
-        ),
+        expenses: get().expenses.map(e => (e.id === id ? updatedExpense : e)),
         loading: false,
       });
     } catch (error) {
@@ -112,7 +110,7 @@ const useExpenseStore = create<ExpenseStore>((set, get) => ({
     }
   },
 
-  deleteExpense: async (id) => {
+  deleteExpense: async id => {
     set({ error: null });
     try {
       const token = useAuthStore.getState().token;
@@ -120,7 +118,7 @@ const useExpenseStore = create<ExpenseStore>((set, get) => ({
 
       await expenseAPI.deleteExpense(token, id);
       // Remove the expense from the array (optimistic update)
-      set({ expenses: get().expenses.filter((e) => e.id !== id) });
+      set({ expenses: get().expenses.filter(e => e.id !== id) });
     } catch (error) {
       set({ error: 'Failed to delete expense' });
       console.error('Delete expense error:', error);
